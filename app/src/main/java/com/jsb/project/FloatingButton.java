@@ -53,6 +53,8 @@ public class FloatingButton extends View {
         paint.setColor(Color.BLACK);
         paint.setAntiAlias(true);
         paint.setTextSize(55);
+        paint.setFakeBoldText(true);
+
 
 
 
@@ -60,15 +62,17 @@ public class FloatingButton extends View {
 
 //        canvas.drawPaint(paint);
         mPaint.setStrokeWidth(20);
-        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(0xffdaedf0);
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLUE);
+        paint.setColor(0xffdaedf0);
 
-        canvas.drawCircle(150f,150f, 150, mPaint);
+        canvas.drawCircle(150f,150f, 80, mPaint);
         canvas.drawCircle(150f,150f, 50, paint);
-        paint.setColor(Color.GREEN);
-        canvas.drawText("+1",120f,165f,paint);
+        paint.setColor(0xff385a7c);
+        canvas.drawText("+",125f,165f,paint);
+        paint.setColor(0xff000000);
+        canvas.drawText("1",150f,165f,paint);
 
 
 
