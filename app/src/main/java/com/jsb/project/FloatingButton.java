@@ -52,15 +52,25 @@ public class FloatingButton extends View {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.BLACK);
         paint.setAntiAlias(true);
+        paint.setTextSize(55);
+
+
+
+
 
 //        canvas.drawPaint(paint);
         mPaint.setStrokeWidth(20);
-
         mPaint.setColor(Color.GREEN);
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.BLUE);
+
         canvas.drawCircle(150f,150f, 150, mPaint);
         canvas.drawCircle(150f,150f, 50, paint);
+        paint.setColor(Color.GREEN);
+        canvas.drawText("+1",120f,165f,paint);
+
+
 
 
 
