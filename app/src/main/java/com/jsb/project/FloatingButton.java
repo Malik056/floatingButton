@@ -46,7 +46,7 @@ public class FloatingButton extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
+        canvas.drawColor(0xffffffff);
         float x = getX();
         float y = getY();
         paint.setStyle(Paint.Style.FILL);
@@ -72,8 +72,9 @@ public class FloatingButton extends View {
         canvas.drawCircle(150f,150f, 50, paint);
         paint.setColor(0xff385a7c);
         canvas.drawText("+",125f,165f,paint);
-        paint.setColor(0xff000000);
+        paint.setColor(0xffff0000);
         canvas.drawText("1",150f,165f,paint);
+
 
 
 
