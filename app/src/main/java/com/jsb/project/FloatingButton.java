@@ -15,29 +15,34 @@ import androidx.annotation.RequiresApi;
 public class FloatingButton extends View {
 
     Paint paint;
+    Paint mPaint;
 
     public FloatingButton(Context context) {
         super(context);
-        paint = new Paint();
+        iniatializer();
+
 
     }
 
     public FloatingButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        paint = new Paint();
+        iniatializer();
     }
 
     public FloatingButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        paint = new Paint();
+        iniatializer();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public FloatingButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        paint = new Paint();
+       iniatializer();
     }
-
+  public void iniatializer(){
+      paint = new Paint();
+      mPaint = new Paint();
+  }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -46,8 +51,16 @@ public class FloatingButton extends View {
         float y = getY();
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.BLACK);
+        paint.setAntiAlias(true);
+        paint.
 //        canvas.drawPaint(paint);
-        canvas.drawCircle(105f,105f, 50, paint);
+        mPaint.setStrokeWidth(20);
+
+        mPaint.setColor(Color.GREEN);
+        mPaint.setAntiAlias(true);
+        mPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawCircle(150f,150f, 150, mPaint);
+        canvas.drawCircle(150f,150f, 50, paint);
 
 
 
