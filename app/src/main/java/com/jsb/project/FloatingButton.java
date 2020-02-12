@@ -23,7 +23,14 @@ public class FloatingButton extends View {
     int progress = 0;
     int baseRadius = 50;
     int strokeWidth = 15;
-    int state =3;
+    int state =0;
+    int time = 0;
+
+    void setTime(int i) {
+        time = i;
+        invalidate();
+    }
+
     public void setProgress(int progress) {
         this.progress = progress;
         invalidate();
@@ -57,6 +64,11 @@ public class FloatingButton extends View {
       m2paint=new Paint();
       oval = new RectF(150f - (baseRadius+20), 150f - (baseRadius+20), 150f + (baseRadius+20), 150f + (baseRadius+20));
 
+  }
+
+  public void setState(int s){
+        state=s;
+        invalidate();
   }
     @Override
     protected void onDraw(Canvas canvas) {
@@ -144,6 +156,15 @@ public class FloatingButton extends View {
             canvas.drawText("+",130f,165f,m2paint);
             m2paint.setColor(0xffff0026);
             canvas.drawText("1", 150f, 162f, m2paint);
+        }
+        else if(state==4){
+            if(time > 0) {
+                paint.setColor(0xff666666);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(((baseRadius - 10) * 2) * time / 50);
+                canvas.drawCircle(150f, 150f, (baseRadius - 10) * time / 50, paint);
+            }
+
         }
     }
 }

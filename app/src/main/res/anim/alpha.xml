@@ -8,4 +8,5 @@
     android:repeatMode="reverse"
     android:toAlpha="0"
     />
+
 </set>

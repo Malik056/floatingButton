@@ -52,8 +52,9 @@ public class FloatingWindow extends Service {
         params.gravity = Gravity.CENTER;
         params.x = 0;
         params.y = 0;
-
-  // Button openapp= new Button(this);
+  //FloatingButton fbtn = new FloatingButton();
+//   Button openapp= new Button(this);
+//   openapp.getResources(fbtn);
         ImageView openapp = new ImageView(this);
         openapp.setImageResource(R.mipmap.ic_launcher);
         ViewGroup.LayoutParams butnparams = new ViewGroup.LayoutParams(
