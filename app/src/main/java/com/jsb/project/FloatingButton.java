@@ -21,8 +21,8 @@ public class FloatingButton extends View {
     Paint m2paint;
     RectF oval;
     int progress = 0;
-    int baseRadius = 50;
-    int strokeWidth = 15;
+    int baseRadius = 55;
+    int strokeWidth = 18;
     int state =0;
     int time = 0;
 
