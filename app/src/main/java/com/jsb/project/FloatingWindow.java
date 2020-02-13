@@ -2,29 +2,32 @@ package com.jsb.project;
 
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 public class FloatingWindow extends Service {
 
     WindowManager wm;
-    LinearLayout ll;
-    FloatingButton openapp;
+//    LinearLayout ll;
+    FloatingButton floatingButton;
+    View mDialog;
+    View mCncDialog;
 
 
     @Nullable
@@ -38,36 +41,49 @@ public class FloatingWindow extends Service {
         super.onCreate();
 
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-
-
-        ll = new LinearLayout(this);
-        ll.setBackgroundColor(Color.TRANSPARENT);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        ll.setLayoutParams(layoutParams);
-
+        // mDialog= new Dialog(this);
+        // mCncDialog= new Dialog(this);
+//        ll = new LinearLayout(this);
+        floatingButton = new FloatingButton(this);
+        mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
+        mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle,null, false);
+//        ll.setBackgroundColor(Color.BLACK);
+//        WindowManager.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
+//                0);
+//        ll.setLayoutParams(layoutParams);
+//        floatingButton.setLayoutParams(layoutParams);
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
+        DisplayMetrics dm = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(dm);
+        final WindowManager.LayoutParams params1 = new WindowManager.LayoutParams(
+                (Double.valueOf( dm.widthPixels * 0.85)).intValue(), (Double.valueOf( dm.heightPixels * 0.60)).intValue(),
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT);
+        params1.gravity = Gravity.CENTER;
+
+
         params.gravity = Gravity.CENTER;
         params.x = 0;
         params.y = 0;
-        openapp = new FloatingButton(this);
-        openapp.setState(2);
 
+
+        floatingButton.setState(2);
 
         final Handler handler = new Handler(Looper.getMainLooper());
         final Runnable[] runnable = new Runnable[1];
         final Handler popEffectHandler = new Handler(Looper.getMainLooper());
         final Runnable[] popEffectRunnable = new Runnable[1];
-        openapp.setOnLongClickListener(new View.OnLongClickListener() {
+        floatingButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
-                openapp.setState(1);
+                floatingButton.setState(1);
 
 
 //
@@ -77,7 +93,7 @@ public class FloatingWindow extends Service {
 //                    @Override
 //                    public void run() {
 //                        if(pressTimeElapsed[0] < 15) {
-//                            openapp.setTime(pressTimeElapsed[0]++);
+//                            floatingButton.setTime(pressTimeElapsed[0]++);
 //                            popEffectHandler.postDelayed(this, 10);
 //                        }
 //                    }
@@ -90,10 +106,17 @@ public class FloatingWindow extends Service {
                 runnable[0] = new Runnable() {
                     @Override
                     public void run() {
-                        openapp.setProgress(finalProgress[0]++);
-                        if(openapp.progress < 100) {
+                        floatingButton.setProgress(finalProgress[0]++);
+                        if(floatingButton.progress < 100) {
                             handler.postDelayed(this, 15);
                         }
+                        else{
+
+                            wm.addView(mCncDialog, params1);
+//                            wm.addView(ll,params);
+//                            ShowpopupCncl();
+                        }
+
 
                     }
                 };
@@ -104,26 +127,13 @@ public class FloatingWindow extends Service {
 
                 return false;
 
+
             }
 
         });
 
 
-
-
-
-
-
-
-
-
-
-//
-//
-//
-//
-
-        openapp.setOnTouchListener(new View.OnTouchListener() {
+        floatingButton.setOnTouchListener(new View.OnTouchListener() {
 
             WindowManager.LayoutParams updatepar = params;
             double x;
@@ -137,7 +147,7 @@ public class FloatingWindow extends Service {
                     case MotionEvent.ACTION_DOWN:
                     {
 
-                        openapp.setState(3);
+                        floatingButton.setState(3);
                         //fb.startAnimation(scale);
                     }
                     // PRESSED
@@ -145,14 +155,14 @@ public class FloatingWindow extends Service {
                     case MotionEvent.ACTION_UP:{
                         if(runnable[0] != null) {
 //                            finalProgress[0] = 0;
-                            openapp.setProgress(0);
+                            floatingButton.setProgress(0);
                             handler.removeCallbacks(runnable[0]);
                         }
                         if(popEffectRunnable[0] != null) {
-                            openapp.setTime(0);
+                            floatingButton.setTime(0);
                             popEffectHandler.removeCallbacks(popEffectRunnable[0]);
                         }
-                        openapp.setState(2);
+                        floatingButton.setState(2);
                         // fb.startAnimation(animation1);
                     }
                     case MotionEvent.ACTION_CANCEL:
@@ -178,7 +188,7 @@ public class FloatingWindow extends Service {
                         updatepar.x = (int) (x+(event.getRawX()-px));
                         updatepar.y = (int) (y+(event.getRawY()-py));
 
-                        wm.updateViewLayout(ll,updatepar);
+                        wm.updateViewLayout(floatingButton,updatepar);
 
                     default:
                         break;
@@ -188,46 +198,68 @@ public class FloatingWindow extends Service {
         });
 
 
-        //  ImageView openapp = new ImageView(this);
-        //openapp.setImageResource(R.mipmap.ic_launcher);
+
         ViewGroup.LayoutParams butnparams = new ViewGroup.LayoutParams(
                 250,250);
-        openapp.setLayoutParams(butnparams);
-
-//
-//        ColorDrawable[] color = {new ColorDrawable(Color.TRANSPARENT), new ColorDrawable(Color.TRANSPARENT)};
-//        TransitionDrawable trans = new TransitionDrawable(color);
-//        //This will work also on old devices. The latest API says you have to use setBackground instead.
-//        openapp.setBackgroundDrawable(trans);
-//        trans.startTransition(5000);
+        floatingButton.setLayoutParams(butnparams);
 
 
-        ll.addView(openapp);
-        wm.addView(ll,params);
-//
-//        openapp.setOnTouchListener(new View.OnTouchListener() {
-//
-//
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//
-//
-//
-//                return false;
-//
-//            }
-//        });
-
-//        openapp.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent home = new Intent(FloatingWindow.this,MainActivity.class);
-//                home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(home);
-//            }
-//        });
 
 
+//        ll.addView(floatingButton);/
+//        ll.addView(mDialog);
+        wm.addView(floatingButton,params);
+
+    }
+
+    public void Showpopup(){
+
+
+        TextView btncnc;
+        btncnc=(TextView) mDialog.findViewById(R.id.cancel);
+        btncnc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                ll.removeView(mDialog);
+                Toast.makeText(getApplicationContext(), "Cancel Button Small", Toast.LENGTH_LONG).show();
+                Log.d("FloatingButtonCancelButton", "CancelButtonClicked");
+            }
+        });
+//        ll.addView(mDialog);
+
+    }
+
+    public void ShowpopupCncl(){
+
+
+        Intent intent=new Intent(this,DialogueActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        TextView btncn;
+        Button cancel;
+//        mCncDialog.setContentView(R.layout.popupcancle);
+        btncn=(TextView) mCncDialog.findViewById(R.id.cancel1);
+        cancel = (Button) mCncDialog.findViewById(R.id.cancelbtn);
+        btncn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                mCncDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Cancel Button Small help screen", Toast.LENGTH_LONG).show();
+                Log.d("FloatingButtonCircleCancelButton", "CancelButtonClicked circle cacel btton");
+
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Showpopup();
+                Toast.makeText(getApplicationContext(), "Cancel Button Large", Toast.LENGTH_LONG).show();
+                Log.d("FloatingButtonHelpCancelButton", "CancelButtonClicked Help button");
+//
+            }
+        });
+//
+//       mCncDialog.show();
 
     }
 
@@ -235,6 +267,7 @@ public class FloatingWindow extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopSelf();
-        wm.removeView(ll);
+//        wm.removeView(ll);
+        wm.removeView(floatingButton);
     }
 }
