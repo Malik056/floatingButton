@@ -231,10 +231,6 @@ public class FloatingWindow extends Service {
 
     public void ShowpopupCncl(){
 
-
-        Intent intent=new Intent(this,DialogueActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
         TextView btncn;
         Button cancel;
 //        mCncDialog.setContentView(R.layout.popupcancle);
