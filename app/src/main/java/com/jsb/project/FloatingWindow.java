@@ -56,7 +56,6 @@ public class FloatingWindow extends Service {
         params.x = 0;
         params.y = 0;
         openapp = new FloatingButton(this);
-    //    final FloatingButton fb = findViewById(R.id.floatingBtn);
         openapp.setState(2);
 
 
