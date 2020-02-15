@@ -121,8 +121,6 @@ public class FloatingButton extends View {
             mPaint.setColor(Color.RED);
             canvas.drawArc(oval, -90, -1f + (3.6f * progress), false, mPaint);
 
-            getLayoutParams().width = 180;
-            getLayoutParams().height = 180;
 
         }
         else if(state==2){
@@ -141,8 +139,6 @@ public class FloatingButton extends View {
             canvas.drawText("+",130f,162f,m2paint);
             m2paint.setColor(0xffff0000);
             canvas.drawText("1", 150f, 162f, m2paint);
-            getLayoutParams().width = 100;
-            getLayoutParams().height = 100;
 
         }
         else if(state==3){
@@ -161,8 +157,7 @@ public class FloatingButton extends View {
             canvas.drawText("+",130f,165f,m2paint);
             m2paint.setColor(0xffff0026);
             canvas.drawText("1", 150f, 162f, m2paint);
-            getLayoutParams().width = 100;
-            getLayoutParams().height = 100;
+
 
         }
         else if(state==4){

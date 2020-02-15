@@ -1,8 +1,19 @@
 package com.jsb.project;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.hardware.biometrics.BiometricPrompt;
+import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
+import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -13,22 +24,30 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class FloatingWindow extends Service {
 
     WindowManager wm;
-//    LinearLayout ll;
+    LinearLayout ll;
     FloatingButton floatingButton;
     View mDialog;
     View mCncDialog;
-
+    //View fingerAuthentication;
+    public static final String CHANNEL_ID = "channel_id";
 
     @Nullable
     @Override
@@ -40,32 +59,21 @@ public class FloatingWindow extends Service {
     public void onCreate() {
         super.onCreate();
 
+
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        // mDialog= new Dialog(this);
-        // mCncDialog= new Dialog(this);
-//        ll = new LinearLayout(this);
-        floatingButton = new FloatingButton(this);
-        mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
-        mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle,null, false);
-//        ll.setBackgroundColor(Color.BLACK);
-//        WindowManager.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
-//                0);
-//        ll.setLayoutParams(layoutParams);
-//        floatingButton.setLayoutParams(layoutParams);
+        ll = new LinearLayout(this);
+        ll.setBackgroundColor(Color.TRANSPARENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        ll.setLayoutParams(layoutParams);
+
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        DisplayMetrics dm = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(dm);
-        final WindowManager.LayoutParams params1 = new WindowManager.LayoutParams(
-                (Double.valueOf( dm.widthPixels * 0.85)).intValue(), (Double.valueOf( dm.heightPixels * 0.60)).intValue(),
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
-        params1.gravity = Gravity.CENTER;
+
 
 
         params.gravity = Gravity.CENTER;
@@ -73,20 +81,21 @@ public class FloatingWindow extends Service {
         params.y = 0;
 
 
-        floatingButton.setState(2);
 
+
+        floatingButton = new FloatingButton(this);
+        floatingButton.setState(2);
         final Handler handler = new Handler(Looper.getMainLooper());
         final Runnable[] runnable = new Runnable[1];
         final Handler popEffectHandler = new Handler(Looper.getMainLooper());
         final Runnable[] popEffectRunnable = new Runnable[1];
-        floatingButton.setOnLongClickListener(new View.OnLongClickListener() {
+        floatingButton.setOnLongClickListener(
+                new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
                 floatingButton.setState(1);
 
-
-//
 //                final int[] pressTimeElapsed = new int[1];
 //                pressTimeElapsed[0] = 1;
 //                popEffectRunnable[0] = new Runnable() {
@@ -102,7 +111,6 @@ public class FloatingWindow extends Service {
 
                 final int[] finalProgress = new int[1];
                 finalProgress[0] = 0;
-
                 runnable[0] = new Runnable() {
                     @Override
                     public void run() {
@@ -111,26 +119,62 @@ public class FloatingWindow extends Service {
                             handler.postDelayed(this, 15);
                         }
                         else{
+                           wm.removeView(ll);
 
-                            wm.addView(mCncDialog, params1);
-//                            wm.addView(ll,params);
-//                            ShowpopupCncl();
+                            String message= "Get Help";
+                            String id= "Main Channel";
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                CharSequence name="Channel";
+                                String description="D_Channel";
+                                int importance=NotificationManager.IMPORTANCE_HIGH;
+                                NotificationChannel notificationChannel = new NotificationChannel(id,name,importance);
+                                notificationChannel.setName(name);
+                                notificationChannel.setDescription(description);
+                                notificationChannel.enableLights(true);
+                                notificationChannel.setLightColor(Color.WHITE);
+                                notificationChannel.enableVibration(false);
+
+                                if(notificationManager != null){
+                                    notificationManager.createNotificationChannel(notificationChannel);
+                                }
+
+                            }
+
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),id)
+                                    .setSmallIcon(R.drawable.logo)
+                                    .setContentTitle("New Notification")
+                                    .setContentText(message)
+                                    .setAutoCancel(true)
+                                    .setDefaults(Notification.DEFAULT_SOUND)
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                                    .setOngoing(true);
+
+                            Intent i = new Intent(FloatingWindow.this,UpWindow.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                            PendingIntent pendingIntent = PendingIntent.getActivity(FloatingWindow.this,0,i,PendingIntent.FLAG_UPDATE_CURRENT);
+                            builder.setContentIntent(pendingIntent);
+
+                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(FloatingWindow.this);
+                            notificationManagerCompat.notify(1000,builder.build());
+
                         }
 
 
                     }
                 };
 
-
-
                 handler.postDelayed(runnable[0], 15);
-
                 return false;
-
-
             }
 
         });
+
+
+
+
 
 
         floatingButton.setOnTouchListener(new View.OnTouchListener() {
@@ -188,7 +232,7 @@ public class FloatingWindow extends Service {
                         updatepar.x = (int) (x+(event.getRawX()-px));
                         updatepar.y = (int) (y+(event.getRawY()-py));
 
-                        wm.updateViewLayout(floatingButton,updatepar);
+                        wm.updateViewLayout(ll,updatepar);
 
                     default:
                         break;
@@ -198,72 +242,32 @@ public class FloatingWindow extends Service {
         });
 
 
-
         ViewGroup.LayoutParams butnparams = new ViewGroup.LayoutParams(
                 250,250);
         floatingButton.setLayoutParams(butnparams);
-
-
-
-
-//        ll.addView(floatingButton);/
-//        ll.addView(mDialog);
-        wm.addView(floatingButton,params);
+        ll.addView(floatingButton);
+        wm.addView(ll, params);
 
     }
 
-    public void Showpopup(){
 
 
-        TextView btncnc;
-        btncnc=(TextView) mDialog.findViewById(R.id.cancel);
-        btncnc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                ll.removeView(mDialog);
-                Toast.makeText(getApplicationContext(), "Cancel Button Small", Toast.LENGTH_LONG).show();
-                Log.d("FloatingButtonCancelButton", "CancelButtonClicked");
-            }
-        });
-//        ll.addView(mDialog);
+    private void createNotificationChannel() {
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Channel";
+            String description = "Description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
-
-    public void ShowpopupCncl(){
-
-        TextView btncn;
-        Button cancel;
-//        mCncDialog.setContentView(R.layout.popupcancle);
-        btncn=(TextView) mCncDialog.findViewById(R.id.cancel1);
-        cancel = (Button) mCncDialog.findViewById(R.id.cancelbtn);
-        btncn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                mCncDialog.dismiss();
-                Toast.makeText(getApplicationContext(), "Cancel Button Small help screen", Toast.LENGTH_LONG).show();
-                Log.d("FloatingButtonCircleCancelButton", "CancelButtonClicked circle cacel btton");
-
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Showpopup();
-                Toast.makeText(getApplicationContext(), "Cancel Button Large", Toast.LENGTH_LONG).show();
-                Log.d("FloatingButtonHelpCancelButton", "CancelButtonClicked Help button");
-//
-            }
-        });
-//
-//       mCncDialog.show();
-
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         stopSelf();
-//        wm.removeView(ll);
-        wm.removeView(floatingButton);
+        wm.removeView(ll);
     }
 }

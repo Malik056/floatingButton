@@ -11,13 +11,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button start_stop;
+
     AlertDialog alert;
     boolean started = false;
 
@@ -26,19 +27,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        start_stop = findViewById(R.id.start_stop);
+      new Handler().postDelayed(new Runnable() {
+          @Override
+          public void run() {
+              start_stop();
+
+              finish();
+          }
+      },2000);
 
         if (isMyServiceRunning(FloatingWindow.class)){
             started = true;
-            start_stop.setText("Stop");
+
         }
 
-        start_stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                start_stop();
-            }
-        });
 
     }
 
@@ -46,11 +48,9 @@ public class MainActivity extends AppCompatActivity {
         if (checkPermission()) {
             if (started) {
                 stopService(new Intent(MainActivity.this, FloatingWindow.class));
-                start_stop.setText("Start");
                 started = false;
             } else {
                 startService(new Intent(MainActivity.this, FloatingWindow.class));
-                start_stop.setText("Stop");
                 started = true;
 
             }
