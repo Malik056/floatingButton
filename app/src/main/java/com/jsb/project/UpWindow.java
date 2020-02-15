@@ -35,15 +35,15 @@ public class UpWindow extends AppCompatActivity {
         mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
         mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle,null, false);
 
-        final Executor executor = Executors.newSingleThreadExecutor();
-        final BiometricPrompt biometricPrompt = new BiometricPrompt.Builder(this)
-                .setTitle("Fingerprint Authentication")
-                .setNegativeButton("cancel", executor, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                }).build();
+//        final Executor executor = Executors.newSingleThreadExecutor();
+//        final BiometricPrompt biometricPrompt = new BiometricPrompt.Builder(this)
+//                .setTitle("Fingerprint Authentication")
+//                .setNegativeButton("cancel", executor, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//                    }
+//                }).build();
 
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
@@ -73,6 +73,7 @@ public class UpWindow extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 wm.removeView(mCncDialog);
+                finish();
 
             }
         });
@@ -80,37 +81,32 @@ public class UpWindow extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 wm.removeView(mCncDialog);
-                wm.addView(mDialog, params1);
-                ImageView fingerPrint;
-                fingerPrint = (ImageView) mDialog.findViewById(R.id.finger);
-                fingerPrint.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        biometricPrompt.authenticate(new CancellationSignal(), executor, new BiometricPrompt.AuthenticationCallback() {
-                            @Override
-                            public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-                                super.onAuthenticationSucceeded(result);
-                                Intent intent = new Intent(UpWindow.this, FloatingWindow.class);
-                                startActivity(intent);
+                Intent intent = new Intent(UpWindow.this, FingerprintActivity.class);
+                startActivity(intent);
+                finish();
+//                wm.addView(mDialog, params1);
+//                ImageView fingerPrint;
+//                fingerPrint = (ImageView) mDialog.findViewById(R.id.finger);
+//                fingerPrint.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        biometricPrompt.authenticate(new CancellationSignal(), executor, new BiometricPrompt.AuthenticationCallback() {
+//                            @Override
+//                            public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+//                                super.onAuthenticationSucceeded(result);
+//                                Intent intent = new Intent(UpWindow.this, FloatingWindow.class);
+//                                startActivity(intent);
 
-                            }
-                        });
+                   //         }
+//                        });
 
-                    }
+  //                  }
 
-                });
+    //            });
 
-
-            }
-        });
-        TextView btnX;
-        btnX=(TextView) mDialog.findViewById(R.id.cancel);
-        btnX.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wm.removeView(mDialog);
 
             }
         });
+
     }
 }

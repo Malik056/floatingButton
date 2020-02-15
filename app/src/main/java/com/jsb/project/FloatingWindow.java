@@ -123,7 +123,7 @@ public class FloatingWindow extends Service {
 
                             String message= "Get Help";
                             String id= "Main Channel";
-                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                            if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.O){
                                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 CharSequence name="Channel";
                                 String description="D_Channel";
