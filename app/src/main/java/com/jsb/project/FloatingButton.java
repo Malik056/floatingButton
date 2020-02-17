@@ -169,5 +169,21 @@ public class FloatingButton extends View {
             }
 
         }
+        else if(state==5){
+            paint.setAntiAlias(true);
+            mPaint.setAntiAlias(true);
+            m2paint.setTextSize(baseRadius-10);
+            m2paint.setFakeBoldText(false);
+            mPaint.setColor(0xffff0000);
+            mPaint.setStyle(Paint.Style.FILL);
+            canvas.drawCircle(150f, 150f, baseRadius, mPaint);
+            m2paint.setColor(0xffffffff);
+            canvas.drawText("+",130f,162f,m2paint);
+            m2paint.setColor(0xffffffff);
+            canvas.drawText("1", 150f, 162f, m2paint);
+            }
+
+
+        }
     }
-}
+

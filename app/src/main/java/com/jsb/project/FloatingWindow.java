@@ -1,5 +1,8 @@
 package com.jsb.project;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -119,46 +122,56 @@ public class FloatingWindow extends Service {
                             handler.postDelayed(this, 15);
                         }
                         else{
-                           wm.removeView(ll);
 
-                            String message= "Get Help";
-                            String id= "Main Channel";
-                            if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.O){
-                                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                CharSequence name="Channel";
-                                String description="D_Channel";
-                                int importance=NotificationManager.IMPORTANCE_HIGH;
-                                NotificationChannel notificationChannel = new NotificationChannel(id,name,importance);
-                                notificationChannel.setName(name);
-                                notificationChannel.setDescription(description);
-                                notificationChannel.enableLights(true);
-                                notificationChannel.setLightColor(Color.WHITE);
-                                notificationChannel.enableVibration(false);
+                               floatingButton.setState(5);
+                               colorAnimation(floatingButton);
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
 
-                                if(notificationManager != null){
-                                    notificationManager.createNotificationChannel(notificationChannel);
+                                    wm.removeView(ll);
+                                    String message= "Get Help";
+                                    String id= "Main Channel";
+                                    if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.O){
+                                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                        CharSequence name="Channel";
+                                        String description="D_Channel";
+                                        int importance=NotificationManager.IMPORTANCE_HIGH;
+                                        NotificationChannel notificationChannel = new NotificationChannel(id,name,importance);
+                                        notificationChannel.setName(name);
+                                        notificationChannel.setDescription(description);
+                                        notificationChannel.enableLights(true);
+                                        notificationChannel.setLightColor(Color.WHITE);
+                                        notificationChannel.enableVibration(false);
+
+                                        if(notificationManager != null){
+                                            notificationManager.createNotificationChannel(notificationChannel);
+                                        }
+
+                                    }
+
+                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),id)
+                                            .setSmallIcon(R.drawable.logo)
+                                            .setContentTitle("New Notification")
+                                            .setContentText(message)
+                                            .setAutoCancel(true)
+                                            .setDefaults(Notification.DEFAULT_SOUND)
+                                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                                            .setOngoing(true);
+
+                                    Intent i = new Intent(FloatingWindow.this,UpWindow.class);
+                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                                    PendingIntent pendingIntent = PendingIntent.getActivity(FloatingWindow.this,0,i,PendingIntent.FLAG_UPDATE_CURRENT);
+                                    builder.setContentIntent(pendingIntent);
+
+                                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(FloatingWindow.this);
+                                    notificationManagerCompat.notify(1000,builder.build());
                                 }
+                            }, 3000);
 
-                            }
-
-                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),id)
-                                    .setSmallIcon(R.drawable.logo)
-                                    .setContentTitle("New Notification")
-                                    .setContentText(message)
-                                    .setAutoCancel(true)
-                                    .setDefaults(Notification.DEFAULT_SOUND)
-                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                                    .setOngoing(true);
-
-                            Intent i = new Intent(FloatingWindow.this,UpWindow.class);
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                            PendingIntent pendingIntent = PendingIntent.getActivity(FloatingWindow.this,0,i,PendingIntent.FLAG_UPDATE_CURRENT);
-                            builder.setContentIntent(pendingIntent);
-
-                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(FloatingWindow.this);
-                            notificationManagerCompat.notify(1000,builder.build());
 
                         }
 
@@ -247,6 +260,19 @@ public class FloatingWindow extends Service {
         floatingButton.setLayoutParams(butnparams);
         ll.addView(floatingButton);
         wm.addView(ll, params);
+
+    }
+
+    private void colorAnimation(FloatingButton f){
+        int startColor=0xffff0000;
+        int endColor=0xff000000;
+
+        ValueAnimator colorAnim = ObjectAnimator.ofInt(f,"backgroundColor",startColor,endColor);
+        colorAnim.setDuration(500);
+        colorAnim.setEvaluator(new ArgbEvaluator());
+        colorAnim.setRepeatCount(100);
+        colorAnim.setRepeatMode(ValueAnimator.REVERSE);
+        colorAnim.start();
 
     }
 
