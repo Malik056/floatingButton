@@ -1,5 +1,6 @@
 package com.jsb.project;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -8,14 +9,22 @@ import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.text.Layout;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -39,8 +48,14 @@ public class FingerprintActivity extends AppCompatActivity {
     private static final String KEY_NAME = "wasi";
     private Cipher cipher;
     TextView textView;
+    View mDialog;
+    WindowManager wm;
+    LinearLayout ll;
 
-
+    @Nullable
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +65,23 @@ public class FingerprintActivity extends AppCompatActivity {
         FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
         textView=(TextView)findViewById(R.id.textView);
 
-
-
+//        mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
+//        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+//        ll = new LinearLayout(this);
+//        ll.setBackgroundColor(Color.TRANSPARENT);
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.MATCH_PARENT);
+//        ll.setLayoutParams(layoutParams);
+//
+//
+//        DisplayMetrics dm = new DisplayMetrics();
+//        wm.getDefaultDisplay().getMetrics(dm);
+//        final WindowManager.LayoutParams params1 = new WindowManager.LayoutParams(
+//                (Double.valueOf( dm.widthPixels * 0.80)).intValue(), (Double.valueOf( dm.heightPixels * 0.55)).intValue(),
+//                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+//                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+//                PixelFormat.TRANSLUCENT);
+//        params1.gravity = Gravity.CENTER;
 
         // Check whether the device has a Fingerprint sensor.
         if(!fingerprintManager.isHardwareDetected()){
@@ -82,6 +112,8 @@ public class FingerprintActivity extends AppCompatActivity {
                 }
             }
         }
+
+      //  wm.addView(ll, params1);
 
         TextView btnX;
         btnX=(TextView) findViewById(R.id.cancel);
