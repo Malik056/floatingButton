@@ -266,7 +266,6 @@ public class FloatingWindow extends Service {
     private void colorAnimation(FloatingButton f){
         int startColor=0xffff0000;
         int endColor=0xff000000;
-
         ValueAnimator colorAnim = ObjectAnimator.ofInt(f,"backgroundColor",startColor,endColor);
         colorAnim.setDuration(500);
         colorAnim.setEvaluator(new ArgbEvaluator());
