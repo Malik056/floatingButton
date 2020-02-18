@@ -18,7 +18,6 @@
 
         <activity android:name=".BiometricAuthActivity" />
         <activity android:name=".FingerprintActivity" />
-        <activity android:name=".UpWindow" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

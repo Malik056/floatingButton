@@ -53,7 +53,7 @@ public class BiometricAuthActivity extends FragmentActivity {
 
 
     private final String KEY_NAME = "Key_For_Authentication";
-//    WindowManager wm;
+   WindowManager wm;
     KeyStore keyStore = null;
     View mDialog;
     View mCncDialog;
@@ -63,18 +63,27 @@ public class BiometricAuthActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biometric_auth);
-
+        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         final FrameLayout root = findViewById(R.id.root);
+
+
+        final FrameLayout.LayoutParams para1;
+        final FrameLayout.LayoutParams para2;
+
+        DisplayMetrics dm2 = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(dm2);
+
+        para1 = new FrameLayout.LayoutParams((Double.valueOf( dm2.widthPixels * 0.80)).intValue(),(Double.valueOf( dm2.heightPixels * 0.60)).intValue(),Gravity.CENTER);
+        para2 = new FrameLayout.LayoutParams((Double.valueOf( dm2.widthPixels * 0.75)).intValue(),(Double.valueOf( dm2.heightPixels * 0.50)).intValue(),Gravity.CENTER);
+
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
 
             {
-//                                        View root = LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_up_window, null, false);
 
-//                wm = (WindowManager) getSystemService(WINDOW_SERVICE);
                 mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
                 mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle, null, false);
-                root.addView(mCncDialog);
+                root.addView(mCncDialog,para2);
 
 
 
@@ -97,9 +106,7 @@ public class BiometricAuthActivity extends FragmentActivity {
 //                        wm.removeView(mCncDialog);
                         root.removeView(mCncDialog);
 
-//                                                Intent intent = new Intent(UpWindow.this, FingerprintActivity.class);
-//                                                startActivity(intent);
-                        root.addView(mDialog);
+                        root.addView(mDialog,para1);
 
                         /////////////////////////////
                         //***************************
@@ -211,7 +218,7 @@ public class BiometricAuthActivity extends FragmentActivity {
                 @Override
                 public void onClick(View v) {
                     wm.removeView(mCncDialog);
-//                    wm.addView(mDialog, params2);
+                 wm.addView(mDialog, params2);
 
 
                     Executor executor = ContextCompat.getMainExecutor(getApplicationContext());

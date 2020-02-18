@@ -194,7 +194,7 @@ public class FloatingWindow extends Service {
                                                     .setSmallIcon(R.drawable.logo)
                                                     .setContentTitle("New Notification")
                                                     .setContentText(message)
-                                                    .setAutoCancel(true)
+                                                    .setAutoCancel(false)
                                                     .setDefaults(Notification.DEFAULT_SOUND)
                                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
