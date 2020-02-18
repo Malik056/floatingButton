@@ -59,11 +59,11 @@ public class MainActivity extends AppCompatActivity {
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-////                finish();
+//
 //            }
 //        },2000);
 
-        if (isMyServiceRunning(FloatingWindow.class)){
+        if (isMyServiceRunning(FloatingWindow.class)) {
             started = true;
         }
 
@@ -71,19 +71,33 @@ public class MainActivity extends AppCompatActivity {
 
     public void start_stop() {
         if (checkPermission()) {
-            if(!isMyServiceRunning(FloatingWindow.class)) {
+            if (!isMyServiceRunning(FloatingWindow.class)) {
                 startService(new Intent(MainActivity.this, FloatingWindow.class));
-                if(alert!=null&& alert.isShowing()) {
+                if (alert != null && alert.isShowing()) {
                     alert.dismiss();
                 }
-                //TODO: OPEN TEXT ACTIVITY
-                finish();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(MainActivity.this, MessageActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }, 2000);
+
+
                 started = true;
+            } else {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(MainActivity.this, MessageActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }, 2000);
             }
-            else {
-                finish();
-            }
-        }else {
+        } else {
             reqPermission();
         }
 
@@ -108,11 +122,10 @@ public class MainActivity extends AppCompatActivity {
             if (!Settings.canDrawOverlays(this)) {
                 reqPermission();
                 return false;
-            }
-            else {
+            } else {
                 return true;
             }
-        }else{
+        } else {
             return true;
         }
 
@@ -151,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isMyServiceRunning(@SuppressWarnings("SameParameterValue") Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        if(manager == null) {
+        if (manager == null) {
             return false;
         }
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
