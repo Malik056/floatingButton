@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.content.Intent;
@@ -48,75 +49,56 @@ public class FingerprintActivity extends AppCompatActivity {
     private static final String KEY_NAME = "wasi";
     private Cipher cipher;
     TextView textView;
-    View mDialog;
-    WindowManager wm;
-    LinearLayout ll;
+//    View mDialog;
+//    WindowManager wm;
+//    LinearLayout ll;
 
-    @Nullable
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popupwindow);
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
         FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
-        textView=(TextView)findViewById(R.id.textView);
+        textView = findViewById(R.id.textView);
 
-//        mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
-//        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-//        ll = new LinearLayout(this);
-//        ll.setBackgroundColor(Color.TRANSPARENT);
-//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.MATCH_PARENT);
-//        ll.setLayoutParams(layoutParams);
-//
-//
-//        DisplayMetrics dm = new DisplayMetrics();
-//        wm.getDefaultDisplay().getMetrics(dm);
-//        final WindowManager.LayoutParams params1 = new WindowManager.LayoutParams(
-//                (Double.valueOf( dm.widthPixels * 0.80)).intValue(), (Double.valueOf( dm.heightPixels * 0.55)).intValue(),
-//                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-//                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-//                PixelFormat.TRANSLUCENT);
-//        params1.gravity = Gravity.CENTER;
+        if (fingerprintManager != null) {
+            if (!fingerprintManager.isHardwareDetected()) {
 
-        // Check whether the device has a Fingerprint sensor.
-        if(!fingerprintManager.isHardwareDetected()){
-
-            textView.setText("Your Device does not have a Fingerprint Sensor");
-        }else {
-            // Checks whether fingerprint permission is set on manifest
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
-                textView.setText("Fingerprint authentication permission not enabled");
-            }else{
-                // Check whether at least one fingerprint is registered
-                if (!fingerprintManager.hasEnrolledFingerprints()) {
-                    textView.setText("Register at least one fingerprint in Settings");
-                }else{
-                    // Checks whether lock screen security is enabled or not
-                    if (!keyguardManager.isKeyguardSecure()) {
-                        textView.setText("Lock screen security not enabled in Settings");
-                    }else{
-                        generateKey();
+                textView.setText("Your Device does not have a Fingerprint Sensor");
+            } else {
+                // Checks whether fingerprint permission is set on manifest
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
+                    textView.setText("Fingerprint authentication permission not enabled");
+                } else {
+                    // Check whether at least one fingerprint is registered
+                    if (!fingerprintManager.hasEnrolledFingerprints()) {
+                        textView.setText("Register at least one fingerprint in Settings");
+                    } else {
+                        // Checks whether lock screen security is enabled or not
+                        if (keyguardManager != null) {
+                            if (!keyguardManager.isKeyguardSecure()) {
+                                textView.setText("Lock screen security not enabled in Settings");
+                            } else {
+                                generateKey();
 
 
-                        if (cipherInit()) {
-                            FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
-                            FingerprintHandler helper = new FingerprintHandler(this);
-                            helper.startAuth(fingerprintManager, cryptoObject);
+                                if (cipherInit()) {
+                                    FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
+                                    FingerprintHandler helper = new FingerprintHandler(this);
+                                    helper.startAuth(fingerprintManager, cryptoObject);
+                                }
+                            }
                         }
                     }
                 }
             }
         }
 
-      //  wm.addView(ll, params1);
+        //  wm.addView(ll, params1);
 
         TextView btnX;
-        btnX=(TextView) findViewById(R.id.cancel);
+        btnX = findViewById(R.id.cancel);
         btnX.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,5 +166,6 @@ public class FingerprintActivity extends AppCompatActivity {
             throw new RuntimeException("Failed to init Cipher", e);
         }
     }
-    }
+
+}
 

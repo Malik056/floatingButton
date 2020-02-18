@@ -13,16 +13,17 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 
 public class FingerprintHandler extends FingerprintManager.AuthenticationCallback {
 
 
-    private Context context;
+    private FragmentActivity context;
 
 
     // Constructor
-    public FingerprintHandler(Context mContext) {
+    public FingerprintHandler(FragmentActivity mContext) {
         context = mContext;
     }
 
@@ -58,12 +59,18 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         this.update("Fingerprint Authentication succeeded.", true);
         Intent intent = new Intent(context, FloatingWindow.class);
-        context.startActivity(intent);
+        context.startService(intent);
+        try {
+            context.finish();
+        }
+        catch (Exception ignored) {
+
+        }
     }
 
 
     public void update(String e, Boolean success){
-        TextView textView = (TextView) ((Activity)context).findViewById(R.id.textView);
+        TextView textView = ((FragmentActivity)context).findViewById(R.id.textView);
         textView.setText(e);
         if(success){
             textView.setTextColor(ContextCompat.getColor(context,R.color.green));
