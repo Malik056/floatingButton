@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 if(alert!=null&& alert.isShowing()) {
                     alert.dismiss();
                 }
+                //TODO: OPEN TEXT ACTIVITY
                 finish();
                 started = true;
             }
