@@ -16,13 +16,17 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.res.ResourcesCompat;
 
 public class FloatingButton extends View {
 
     Paint paint;
     Paint mPaint;
-    Paint m2paint;
+    Paint mPaintForPlus;
+    Paint mPaintForOne;
     RectF oval;
+    Typeface sriracha = ResourcesCompat.getFont(getContext(), R.font.sriracha_regular);
+    Typeface montserrat_bold = ResourcesCompat.getFont(getContext(), R.font.montserrat_extra_bold_italic);
     CornerPathEffect cornerPathEffect;
     int progress = 0;
     int baseRadius = 55;
@@ -72,7 +76,10 @@ public class FloatingButton extends View {
         cornerPathEffect = new CornerPathEffect(baseRadius);
         paint = new Paint();
         mPaint = new Paint();
-        m2paint = new Paint();
+        mPaintForOne = new Paint();
+        mPaintForPlus = new Paint();
+        mPaintForOne.setTypeface(sriracha);
+        mPaintForPlus.setTypeface(montserrat_bold);
         oval = new RectF(150f - (baseRadius + 20), 150f - (baseRadius + 20), 150f + (baseRadius + 20), 150f + (baseRadius + 20));
 
     }
@@ -85,9 +92,16 @@ public class FloatingButton extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        m2paint.setTypeface(Typeface.create(Typeface.SERIF, Typeface.BOLD));
+
+        mPaintForOne.setTextSize(baseRadius - 10);
+        mPaintForOne.setFakeBoldText(false);
+        mPaintForPlus.setTextSize(baseRadius - 10);
+        mPaintForPlus.setFakeBoldText(false);
+
+
 
         if (state == 1) {
+
             paint.setStyle(Paint.Style.FILL);
             paint.setAntiAlias(true);
             paint.setTextSize(baseRadius + 5);
@@ -98,7 +112,6 @@ public class FloatingButton extends View {
             mPaint.setStyle(Paint.Style.STROKE);
             paint.setColor(0xffdaedf0);
             mPaint.setColor(0xffb1d0d6);
-
             paint.setShadowLayer(baseRadius - 41, 0, 0, 0xff000000);
 
 
@@ -108,9 +121,10 @@ public class FloatingButton extends View {
             canvas.drawCircle(150f, 150f, baseRadius, paint);
             paint.setColor(0xff385a7c);
             paint.setShadowLayer(0, 0, 0, 0x00000000);
-
+            paint.setTypeface(montserrat_bold);
             canvas.drawText("+", 125f, 170f, paint);
             paint.setColor(0xffff0000);
+            paint.setTypeface(sriracha);
             canvas.drawText("1", 150f, 170f, paint);
             mPaint.setColor(0xffffffff);
             mPaint.setStyle(Paint.Style.STROKE);
@@ -136,8 +150,6 @@ public class FloatingButton extends View {
         } else if (state == 2) {
             paint.setAntiAlias(true);
             mPaint.setAntiAlias(true);
-            m2paint.setTextSize(baseRadius - 10);
-            m2paint.setFakeBoldText(false);
             mPaint.setColor(0xffedf2ee);
             mPaint.setStyle(Paint.Style.FILL);
             canvas.drawCircle(150f, 150f, baseRadius, mPaint);
@@ -145,16 +157,14 @@ public class FloatingButton extends View {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(strokeWidth - 3);
             canvas.drawCircle(150f, 150f, baseRadius - 10, paint);
-            m2paint.setColor(0xff385a7c);
-            canvas.drawText("+", 130f, 162f, m2paint);
-            m2paint.setColor(0xffff0000);
-            canvas.drawText("1", 150f, 162f, m2paint);
+            mPaintForPlus.setColor(0xff385a7c);
+            canvas.drawText("+", 130f, 162f, mPaintForPlus);
+            mPaintForOne.setColor(0xffff0000);
+            canvas.drawText("1", 150f, 162f, mPaintForOne);
 
         } else if (state == 3) {
             paint.setAntiAlias(true);
             mPaint.setAntiAlias(true);
-            m2paint.setTextSize(baseRadius - 10);
-            m2paint.setFakeBoldText(true);
             mPaint.setColor(0xff002266);
             mPaint.setStyle(Paint.Style.FILL);
             canvas.drawCircle(150f, 150f, baseRadius, mPaint);
@@ -162,10 +172,10 @@ public class FloatingButton extends View {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(strokeWidth - 3);
             canvas.drawCircle(150f, 150f, baseRadius - 10, paint);
-            m2paint.setColor(0xffffffff);
-            canvas.drawText("+", 130f, 165f, m2paint);
-            m2paint.setColor(0xffff0026);
-            canvas.drawText("1", 150f, 162f, m2paint);
+            mPaintForPlus.setColor(0xffffffff);
+            canvas.drawText("+", 130f, 165f, mPaintForPlus);
+            mPaintForOne.setColor(0xffff0026);
+            canvas.drawText("1", 150f, 162f, mPaintForOne);
 
 
         } else if (state == 4) {
@@ -179,54 +189,48 @@ public class FloatingButton extends View {
         } else if (state == 5) {
             paint.setAntiAlias(true);
             mPaint.setAntiAlias(true);
-            m2paint.setTextSize(baseRadius - 10);
-            m2paint.setFakeBoldText(false);
             mPaint.setColor(0xffff0000);
             mPaint.setStyle(Paint.Style.FILL);
             canvas.drawCircle(150f, 150f, baseRadius, mPaint);
-            m2paint.setColor(0xffffffff);
-            canvas.drawText("+", 130f, 162f, m2paint);
-            m2paint.setColor(0xffffffff);
-            canvas.drawText("1", 150f, 162f, m2paint);
+            mPaintForPlus.setColor(0xffffffff);
+            canvas.drawText("+", 130f, 162f, mPaintForPlus);
+            mPaintForOne.setColor(0xffffffff);
+            canvas.drawText("1", 150f, 162f, mPaintForOne);
         }
         else if(state == 6) {
-            m2paint.setStrokeWidth(2);
             if(subState == 0) {
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.RED);
-                m2paint.setTextSize(baseRadius);
-                m2paint.setFakeBoldText(false);
-                m2paint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+                mPaintForPlus.setStyle(Paint.Style.FILL_AND_STROKE);
+                mPaintForOne.setStyle(Paint.Style.FILL_AND_STROKE);
                 canvas.drawCircle(150f, 150f, baseRadius+10, mPaint);
-                m2paint.setColor(0xffffffff);
-                canvas.drawText("+", 125f, 162f, m2paint);
-                m2paint.setColor(0xffffffff);
-                canvas.drawText("1", 155f, 162f, m2paint);
+                mPaintForPlus.setColor(0xffffffff);
+                canvas.drawText("+", 125f, 162f, mPaintForPlus);
+                mPaintForOne.setColor(0xffffffff);
+                canvas.drawText("1", 155f, 162f, mPaintForOne);
             }
             else if(subState == 1) {
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.WHITE);
-                m2paint.setTextSize(baseRadius);
-                m2paint.setStyle(Paint.Style.FILL_AND_STROKE);
-                m2paint.setFakeBoldText(true);
+                mPaintForPlus.setStyle(Paint.Style.FILL_AND_STROKE);
+                mPaintForOne.setStyle(Paint.Style.FILL_AND_STROKE);
                 canvas.drawCircle(140f, 150f, baseRadius+10, mPaint);
-                m2paint.setColor(Color.RED);
-                canvas.drawText("+ ", 125f, 162f, m2paint);
-//                m2paint.setColor(0xffffffff);
-                canvas.drawText("1", 155f, 162f, m2paint);
+                mPaintForPlus.setColor(Color.RED);
+                mPaintForOne.setColor(Color.RED);
+                canvas.drawText("+ ", 125f, 162f, mPaintForPlus);
+                canvas.drawText("1", 155f, 162f, mPaintForOne);
             }
             else if (subState == 2) {
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.BLACK);
-                m2paint.setTextSize(baseRadius);
-                m2paint.setStyle(Paint.Style.STROKE);
-                m2paint.setFakeBoldText(true);
+                mPaintForOne.setStyle(Paint.Style.STROKE);
+                mPaintForPlus.setStyle(Paint.Style.STROKE);
                 canvas.drawCircle(150f, 150f, baseRadius+10, mPaint);
-                m2paint.setStyle(Paint.Style.STROKE);
-                m2paint.setColor(0xffffffff);
-                canvas.drawText("+ ", 125f, 162f, m2paint);
-                m2paint.setColor(0xffff0000);
-                canvas.drawText("1", 155f, 162f, m2paint);
+                mPaintForPlus.setColor(0xffffffff);
+                canvas.drawText("+ ", 127f, 162f, mPaintForPlus);
+                mPaintForOne.setColor(0xffff0000);
+                canvas.drawText("1", 153f, 162f, mPaintForOne);
             }
         }
 
