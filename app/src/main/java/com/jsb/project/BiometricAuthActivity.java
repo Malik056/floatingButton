@@ -1,20 +1,11 @@
 package com.jsb.project;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
-import androidx.biometric.BiometricPrompt.PromptInfo;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PixelFormat;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +13,6 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +20,17 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.biometric.BiometricPrompt;
+import androidx.biometric.BiometricPrompt.PromptInfo;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -49,20 +48,29 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
+@SuppressWarnings("deprecation")
 public class BiometricAuthActivity extends FragmentActivity {
 
 
     private final String KEY_NAME = "Key_For_Authentication";
-   WindowManager wm;
+    WindowManager wm;
     KeyStore keyStore = null;
     View mDialog;
     View mCncDialog;
+    private int INTENT_AUTHENTICATE = 3039;
+    private FingerprintHandler helper = new FingerprintHandler(BiometricAuthActivity.this);
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biometric_auth);
+    }
+
+    @SuppressLint("InflateParams")
+    @Override
+    protected void onStart() {
+        super.onStart();
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         final FrameLayout root = findViewById(R.id.root);
 
@@ -73,9 +81,15 @@ public class BiometricAuthActivity extends FragmentActivity {
         DisplayMetrics dm2 = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm2);
 
+/*
         para1 = new FrameLayout.LayoutParams((Double.valueOf( dm2.widthPixels * 0.80)).intValue(),(Double.valueOf( dm2.heightPixels * 0.60)).intValue(),Gravity.CENTER);
-        para2 = new FrameLayout.LayoutParams((Double.valueOf( dm2.widthPixels * 0.75)).intValue(),(Double.valueOf( dm2.heightPixels * 0.50)).intValue(),Gravity.CENTER);
+        para2 = new FrameLayout.LayoutParams((Double.valueOf( dm2.widthPixels * 0.80)).intValue(),(Double.valueOf( dm2.heightPixels * 0.50)).intValue(),Gravity.CENTER);
+*/
+        para1 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        para2 = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
 
+        para1.setMargins(40,40,40,40);
+        para2.setMargins(40,40,40,40);
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
 
@@ -87,19 +101,19 @@ public class BiometricAuthActivity extends FragmentActivity {
 
 
 
-                TextView btncn;
+                ImageView btnCancel;
                 Button cancel;
-                btncn = mCncDialog.findViewById(R.id.cancel1);
+                btnCancel = mCncDialog.findViewById(R.id.cancel1);
                 cancel = mCncDialog.findViewById(R.id.cancelbtn);
-                btncn.setOnClickListener(new View.OnClickListener() {
+                btnCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        wm.removeView(mCncDialog);
                         root.removeView(mCncDialog);
                         finish();
                     }
                 });
                 cancel.setOnClickListener(new View.OnClickListener() {
+                    @SuppressWarnings("deprecation")
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void onClick(View v) {
@@ -113,11 +127,39 @@ public class BiometricAuthActivity extends FragmentActivity {
                         //FingerPrint Detection Block
                         //***************************
                         /////////////////////////////
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
-                            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                            final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
                             FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
                             TextView textView = mDialog.findViewById(R.id.textView);
 
+                            TextView pin = mDialog.findViewById(R.id.pin);
+                            TextView password = mDialog.findViewById(R.id.password);
+
+                            pin.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+//                                    KeyguardManager km = keyguardManager;
+//
+//                                    if (km != null && km.isKeyguardSecure()) {
+//                                        Intent authIntent = km.createConfirmDeviceCredentialIntent("Enter your passwrod", "");
+//                                        startActivityForResult(authIntent, INTENT_AUTHENTICATE);
+//                                    }
+                                    Intent intent = new Intent(Intent.ACTION_RUN);
+                                    intent.setComponent(new ComponentName("com.android.settings",
+                                            "com.android.settings.ConfirmLockPassword"));
+                                    startActivityForResult(intent, INTENT_AUTHENTICATE);
+                                }
+                            });
+
+                            password.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(Intent.ACTION_RUN);
+                                    intent.setComponent(new ComponentName("com.android.settings",
+                                            "com.android.settings.ConfirmLockPassword"));
+                                    startActivityForResult(intent, INTENT_AUTHENTICATE);
+                                }
+                            });
 
                             // Check whether the device has a Fingerprint sensor.
                             if (fingerprintManager != null) {
@@ -141,7 +183,6 @@ public class BiometricAuthActivity extends FragmentActivity {
                                                     generateKey();
                                                     if (cipherInit()) {
                                                         FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
-                                                        FingerprintHandler helper = new FingerprintHandler(BiometricAuthActivity.this);
                                                         helper.startAuth(fingerprintManager, cryptoObject);
                                                     }
                                                 }
@@ -153,7 +194,7 @@ public class BiometricAuthActivity extends FragmentActivity {
 
                             //  wm.addView(ll, params1);
 
-                            TextView btnX;
+                            ImageView btnX;
                             btnX = mDialog.findViewById(R.id.cancel);
                             btnX.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -168,58 +209,27 @@ public class BiometricAuthActivity extends FragmentActivity {
                 });
             }
 
-//            finish();
         }
         else {
 
-            final WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-            final View mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
-            final View mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle,null, false);
-
-
-            final DisplayMetrics dm = new DisplayMetrics();
-            assert wm != null;
-            wm.getDefaultDisplay().getMetrics(dm);
-
-            final WindowManager.LayoutParams params1;
-            final WindowManager.LayoutParams params2;
-
-            params1 = new WindowManager.LayoutParams(
-                    (Double.valueOf( dm.widthPixels * 0.80)).intValue(), (Double.valueOf( dm.heightPixels * 0.55)).intValue(),
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-            params2 = new WindowManager.LayoutParams(
-                    (Double.valueOf( dm.widthPixels * 0.75)).intValue(), (Double.valueOf( dm.heightPixels * 0.50)).intValue(),
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSLUCENT);
-            params1.gravity = Gravity.CENTER;
-            DisplayMetrics dm1 = new DisplayMetrics();
-            wm.getDefaultDisplay().getMetrics(dm1);
-            params2.gravity = Gravity.CENTER;
-
-
-
-            wm.addView(mCncDialog, params2);
-            TextView btncn;
+            @SuppressLint("InflateParams") final View mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle,null, false);
+            root.addView(mCncDialog, para2);
+            ImageView btnCancel;
             Button cancel;
-            btncn= mCncDialog.findViewById(R.id.cancel1);
+            btnCancel= mCncDialog.findViewById(R.id.cancel1);
             cancel = mCncDialog.findViewById(R.id.cancelbtn);
-            btncn.setOnClickListener(new View.OnClickListener() {
+            btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    wm.removeView(mCncDialog);
-
+                    root.removeView(mCncDialog);
+                    finish();
                 }
             });
 
             cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    wm.removeView(mCncDialog);
-                 wm.addView(mDialog, params2);
-
+                    root.removeView(mCncDialog);
 
                     Executor executor = ContextCompat.getMainExecutor(getApplicationContext());
                     BiometricPrompt biometricPrompt = new BiometricPrompt(BiometricAuthActivity.this,
@@ -231,14 +241,15 @@ public class BiometricAuthActivity extends FragmentActivity {
                             Toast.makeText(getApplicationContext(),
                                     "Authentication error: " + errString, Toast.LENGTH_SHORT)
                                     .show();
+                            finish();
                         }
 
                         @Override
                         public void onAuthenticationSucceeded(
                                 @NonNull BiometricPrompt.AuthenticationResult result) {
                             super.onAuthenticationSucceeded(result);
-                            Toast.makeText(getApplicationContext(),
-                                    "Authentication succeeded!", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getApplicationContext(),
+//                                    "Authentication succeeded!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), FloatingWindow.class);
                             startService(intent);
                             finish();
@@ -256,7 +267,6 @@ public class BiometricAuthActivity extends FragmentActivity {
                     PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                             .setTitle("Biometric login for my app")
                             .setSubtitle("Log in using your biometric credential")
-                            .setNegativeButtonText("Use account Password")
                             .setDeviceCredentialAllowed(true)
                             .setConfirmationRequired(false)
                             .build();
@@ -332,5 +342,62 @@ public class BiometricAuthActivity extends FragmentActivity {
     }
 
 
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == INTENT_AUTHENTICATE) {
+            if (resultCode == RESULT_OK) {
+                Intent intent = new Intent(getApplicationContext(), FloatingWindow.class);
+                startService(intent);
+                finish();
+            }
+            else {
+                final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+                FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+                TextView textView = mDialog.findViewById(R.id.textView);
+                if (fingerprintManager != null) {
+                    if (!fingerprintManager.isHardwareDetected()) {
 
+                        textView.setText("Your Device does not have a Fingerprint Sensor");
+                    } else {
+                        // Checks whether fingerprint permission is set on manifest
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
+                            textView.setText("Fingerprint authentication permission not enabled");
+                        } else {
+                            // Check whether at least one fingerprint is registered
+                            if (!fingerprintManager.hasEnrolledFingerprints()) {
+                                textView.setText("Register at least one fingerprint in Settings");
+                            } else {
+                                // Checks whether lock screen security is enabled or not
+                                if (keyguardManager != null) {
+                                    if (!keyguardManager.isKeyguardSecure()) {
+                                        textView.setText("Lock screen security not enabled in Settings");
+                                    } else {
+                                        generateKey();
+                                        if (cipherInit()) {
+                                            FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
+                                            helper.startAuth(fingerprintManager, cryptoObject);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        helper.cancelAuth();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        helper.cancelAuth();
+    }
 }

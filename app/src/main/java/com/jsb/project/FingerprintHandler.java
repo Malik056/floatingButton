@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.fingerprint.FingerprintManager;
@@ -21,6 +22,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
 
 
     private FragmentActivity context;
+    private CancellationSignal cancellationSignal = new CancellationSignal();
 
 
     // Constructor
@@ -28,9 +30,12 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
         context = mContext;
     }
 
+    public void cancelAuth() {
+        cancellationSignal.cancel();
+    }
+
 
     public void startAuth(FingerprintManager manager, FingerprintManager.CryptoObject cryptoObject) {
-        CancellationSignal cancellationSignal = new CancellationSignal();
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -40,7 +45,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
 
     @Override
     public void onAuthenticationError(int errMsgId, CharSequence errString) {
-        this.update("Fingerprint Authentication error\n" + errString, false);
+//        this.update("Fingerprint Authentication error\n" + errString, false);
     }
 
 
@@ -62,6 +67,13 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
         Intent intent = new Intent(context, FloatingWindow.class);
         context.startService(intent);
         try {
+            Intent sendMessage = new Intent();
+            sendMessage.setAction(FloatingWindow.BUTTON_ENABLED);
+            context.sendBroadcast(sendMessage);
+            SharedPreferences.Editor editor = context.getSharedPreferences(context.getString(R.string.shared_preferences_for_message_name), Context.MODE_PRIVATE).edit();
+            editor.putString("message", "Universe Rescued");
+            editor.putBoolean(context.getString(R.string.is_notification_active), false);
+            editor.apply();
             clearNotification();
             context.finish();
         }
