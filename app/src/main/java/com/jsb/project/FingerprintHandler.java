@@ -39,6 +39,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        cancellationSignal = new CancellationSignal();
         manager.authenticate(cryptoObject, cancellationSignal, 0, this, null);
     }
 

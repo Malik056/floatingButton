@@ -81,10 +81,6 @@ public class BiometricAuthActivity extends FragmentActivity {
         DisplayMetrics dm2 = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm2);
 
-/*
-        para1 = new FrameLayout.LayoutParams((Double.valueOf( dm2.widthPixels * 0.80)).intValue(),(Double.valueOf( dm2.heightPixels * 0.60)).intValue(),Gravity.CENTER);
-        para2 = new FrameLayout.LayoutParams((Double.valueOf( dm2.widthPixels * 0.80)).intValue(),(Double.valueOf( dm2.heightPixels * 0.50)).intValue(),Gravity.CENTER);
-*/
         para1 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         para2 = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
 
@@ -248,8 +244,6 @@ public class BiometricAuthActivity extends FragmentActivity {
                         public void onAuthenticationSucceeded(
                                 @NonNull BiometricPrompt.AuthenticationResult result) {
                             super.onAuthenticationSucceeded(result);
-//                            Toast.makeText(getApplicationContext(),
-//                                    "Authentication succeeded!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), FloatingWindow.class);
                             startService(intent);
                             finish();
@@ -352,40 +346,41 @@ public class BiometricAuthActivity extends FragmentActivity {
                 startService(intent);
                 finish();
             }
-            else {
-                final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-                FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
-                TextView textView = mDialog.findViewById(R.id.textView);
-                if (fingerprintManager != null) {
-                    if (!fingerprintManager.isHardwareDetected()) {
-
-                        textView.setText("Your Device does not have a Fingerprint Sensor");
-                    } else {
-                        // Checks whether fingerprint permission is set on manifest
-                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
-                            textView.setText("Fingerprint authentication permission not enabled");
-                        } else {
-                            // Check whether at least one fingerprint is registered
-                            if (!fingerprintManager.hasEnrolledFingerprints()) {
-                                textView.setText("Register at least one fingerprint in Settings");
-                            } else {
-                                // Checks whether lock screen security is enabled or not
-                                if (keyguardManager != null) {
-                                    if (!keyguardManager.isKeyguardSecure()) {
-                                        textView.setText("Lock screen security not enabled in Settings");
-                                    } else {
-                                        generateKey();
-                                        if (cipherInit()) {
-                                            FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
-                                            helper.startAuth(fingerprintManager, cryptoObject);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+//            else {
+//
+//                final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+//                FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+//                TextView textView = mDialog.findViewById(R.id.textView);
+//                if (fingerprintManager != null) {
+//                    if (!fingerprintManager.isHardwareDetected()) {
+//
+//                        textView.setText("Your Device does not have a Fingerprint Sensor");
+//                    } else {
+//                        // Checks whether fingerprint permission is set on manifest
+//                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
+//                            textView.setText("Fingerprint authentication permission not enabled");
+//                        } else {
+//                            // Check whether at least one fingerprint is registered
+//                            if (!fingerprintManager.hasEnrolledFingerprints()) {
+//                                textView.setText("Register at least one fingerprint in Settings");
+//                            } else {
+//                                // Checks whether lock screen security is enabled or not
+//                                if (keyguardManager != null) {
+//                                    if (!keyguardManager.isKeyguardSecure()) {
+//                                        textView.setText("Lock screen security not enabled in Settings");
+//                                    } else {
+//                                        generateKey();
+//                                        if (cipherInit()) {
+//                                            FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
+//                                            helper.startAuth(fingerprintManager, cryptoObject);
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 

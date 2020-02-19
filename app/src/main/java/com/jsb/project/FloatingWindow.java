@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -78,7 +79,6 @@ public class FloatingWindow extends Service {
         floatingButton.setState(2);
         final Handler handler = new Handler(Looper.getMainLooper());
         final Runnable[] runnable = new Runnable[1];
-//        final Handler popEffectHandler = new Handler(Looper.getMainLooper());
 
         floatingButton.setOnLongClickListener(
                 new View.OnLongClickListener() {
@@ -117,6 +117,7 @@ public class FloatingWindow extends Service {
                                                     notificationManager.createNotificationChannel(notificationChannel);
                                                 }
 
+
                                             }
 
                                             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), id)
@@ -129,10 +130,6 @@ public class FloatingWindow extends Service {
                                                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                                                     .setOngoing(true);
 
-//                                            Intent i = new Intent(FloatingWindow.this, UpWindow.class);
-//                                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-
                                             Intent intent = new Intent(getApplicationContext(), BiometricAuthActivity.class);
                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -144,8 +141,8 @@ public class FloatingWindow extends Service {
 
                                             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(getString(R.string.shared_preferences_for_message_name), MODE_PRIVATE).edit();
                                             editor.putBoolean(getString(R.string.is_notification_active), true);
+                                            editor.putBoolean("isClosedByMe",true);
                                             editor.apply();
-
                                             stopSelf();
                                         }
                                     });
@@ -237,19 +234,29 @@ public class FloatingWindow extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
-            SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.shared_preferences_for_message_name), MODE_PRIVATE).edit();
-            editor.putString("message", "Hello World");
-            editor.apply();
-            Intent sendMessage = new Intent();
-            sendMessage.setAction(FloatingWindow.BUTTON_DISABLED);
-            sendBroadcast(sendMessage);
-            stopSelf();
-            wm.removeView(ll);
-        } catch (Exception ignored) {
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.shared_preferences_for_message_name),MODE_PRIVATE);
+        boolean isClosedByMe = preferences.getBoolean("isClosedByMe", false);
+        if(isClosedByMe) {
+            try {
+                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.shared_preferences_for_message_name)
+                        , MODE_PRIVATE).edit();
+                editor.putString("message", "Hello World");
+                editor.apply();
+                Intent sendMessage = new Intent();
+                sendMessage.setAction(FloatingWindow.BUTTON_DISABLED);
+                sendBroadcast(sendMessage);
+                stopSelf();
+                wm.removeView(ll);
+            } catch (Exception ignored) {
 
+            }
         }
-
+        else {
+            Intent intent = new Intent(Intent.ACTION_DELETE);
+            intent.setData(Uri.parse("package:"+getPackageName()));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
     }
 
 
