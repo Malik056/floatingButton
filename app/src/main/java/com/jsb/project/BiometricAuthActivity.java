@@ -168,7 +168,11 @@ public class BiometricAuthActivity extends FragmentActivity {
                                     } else {
                                         // Check whether at least one fingerprint is registered
                                         if (!fingerprintManager.hasEnrolledFingerprints()) {
-                                            textView.setText("Register at least one fingerprint in Settings");
+                                            Intent intent = new Intent(Intent.ACTION_RUN);
+                                            intent.setComponent(new ComponentName("com.android.settings",
+                                                    "com.android.settings.ConfirmLockPassword"));
+                                            startActivityForResult(intent, INTENT_AUTHENTICATE);
+
                                         } else {
                                             // Checks whether lock screen security is enabled or not
                                             if (keyguardManager != null) {
