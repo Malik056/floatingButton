@@ -8,13 +8,17 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -223,8 +227,7 @@ public class FloatingWindow extends Service {
 
         });
 
-        ViewGroup.LayoutParams btnParams = new ViewGroup.LayoutParams(
-                250, 250);
+        ViewGroup.LayoutParams btnParams = new ViewGroup.LayoutParams(Float.valueOf(getScreenWidth()* 0.40f).intValue(), Float.valueOf(getScreenWidth()*0.40f).intValue());
         floatingButton.setLayoutParams(btnParams);
         ll.addView(floatingButton);
         wm.addView(ll, params);
@@ -257,6 +260,14 @@ public class FloatingWindow extends Service {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
+    }
+
+    public static float getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    public static float getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
 

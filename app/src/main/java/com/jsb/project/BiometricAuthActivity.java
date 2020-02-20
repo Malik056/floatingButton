@@ -81,20 +81,19 @@ public class BiometricAuthActivity extends FragmentActivity {
         DisplayMetrics dm2 = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm2);
 
-        para1 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        para1 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         para2 = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
 
-        para1.setMargins(40,40,40,40);
-        para2.setMargins(40,40,40,40);
+        para1.setMargins(40, 40, 40, 40);
+        para2.setMargins(40, 40, 40, 40);
 
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
 
             {
 
                 mDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupwindow, null, false);
                 mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle, null, false);
-                root.addView(mCncDialog,para2);
-
+                root.addView(mCncDialog, para2);
 
 
                 ImageView btnCancel;
@@ -116,7 +115,7 @@ public class BiometricAuthActivity extends FragmentActivity {
 //                        wm.removeView(mCncDialog);
                         root.removeView(mCncDialog);
 
-                        root.addView(mDialog,para1);
+                        root.addView(mDialog, para1);
 
                         /////////////////////////////
                         //***************************
@@ -186,33 +185,44 @@ public class BiometricAuthActivity extends FragmentActivity {
                                         }
                                     }
                                 }
+                                ImageView btnX;
+                                btnX = mDialog.findViewById(R.id.cancel);
+                                btnX.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        root.removeView(mDialog);
+                                        finish();
+                                    }
+                                });
+                            } else {
+                                Intent intent = new Intent(Intent.ACTION_RUN);
+                                intent.setComponent(new ComponentName("com.android.settings",
+                                        "com.android.settings.ConfirmLockPassword"));
+                                startActivityForResult(intent, INTENT_AUTHENTICATE);
                             }
-
                             //  wm.addView(ll, params1);
 
-                            ImageView btnX;
-                            btnX = mDialog.findViewById(R.id.cancel);
-                            btnX.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    root.removeView(mDialog);
-                                    finish();
-                                }
-                            });
+
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_RUN);
+                            intent.setComponent(new ComponentName("com.android.settings",
+                                    "com.android.settings.ConfirmLockPassword"));
+                            startActivityForResult(intent, INTENT_AUTHENTICATE);
                         }
+                        //  wm.addView(ll, params1);
+
 
                     }
                 });
             }
 
-        }
-        else {
+        } else {
 
-            @SuppressLint("InflateParams") final View mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle,null, false);
+            @SuppressLint("InflateParams") final View mCncDialog = LayoutInflater.from(getApplicationContext()).inflate(R.layout.popupcancle, null, false);
             root.addView(mCncDialog, para2);
             ImageView btnCancel;
             Button cancel;
-            btnCancel= mCncDialog.findViewById(R.id.cancel1);
+            btnCancel = mCncDialog.findViewById(R.id.cancel1);
             cancel = mCncDialog.findViewById(R.id.cancelbtn);
             btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
