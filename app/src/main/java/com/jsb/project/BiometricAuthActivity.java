@@ -4,7 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
@@ -48,7 +50,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-@SuppressWarnings("deprecation")
 public class BiometricAuthActivity extends FragmentActivity {
 
 
@@ -108,74 +109,95 @@ public class BiometricAuthActivity extends FragmentActivity {
                     }
                 });
                 cancel.setOnClickListener(new View.OnClickListener() {
-                    @SuppressWarnings("deprecation")
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void onClick(View v) {
+                        final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+                        if(keyguardManager == null || !keyguardManager.isDeviceSecure()) {
+                            Intent intent = new Intent(getApplicationContext(), FloatingWindow.class);
+                            startService(intent);
+                            try {
+                                Intent sendMessage = new Intent();
+                                sendMessage.setAction(FloatingWindow.BUTTON_ENABLED);
+                                sendBroadcast(sendMessage);
+                                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.shared_preferences_for_message_name), Context.MODE_PRIVATE).edit();
+                                editor.putString("message", "Universe Rescued");
+                                editor.putBoolean(getString(R.string.is_notification_active), false);
+                                editor.apply();
+                                FingerprintHandler.clearNotification(getApplicationContext());
+                            }
+                            catch (Exception ignored) {
+
+                            }
+                            finally {
+                                finish();
+                            }
+                        }
+                        else {
+
 //                        wm.removeView(mCncDialog);
-                        root.removeView(mCncDialog);
+                            root.removeView(mCncDialog);
 
-                        root.addView(mDialog, para1);
+                            root.addView(mDialog, para1);
 
-                        /////////////////////////////
-                        //***************************
-                        //FingerPrint Detection Block
-                        //***************************
-                        /////////////////////////////
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                            final KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-                            FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
-                            TextView textView = mDialog.findViewById(R.id.textView);
+                            /////////////////////////////
+                            //***************************
+                            //FingerPrint Detection Block
+                            //***************************
+                            /////////////////////////////
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 
-                            TextView pin = mDialog.findViewById(R.id.pin);
-                            TextView password = mDialog.findViewById(R.id.password);
+                                FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+                                TextView textView = mDialog.findViewById(R.id.textView);
 
-                            pin.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
+                                TextView pin = mDialog.findViewById(R.id.pin);
+                                TextView password = mDialog.findViewById(R.id.password);
+
+                                pin.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
 //                                    KeyguardManager km = keyguardManager;
 //
 //                                    if (km != null && km.isKeyguardSecure()) {
 //                                        Intent authIntent = km.createConfirmDeviceCredentialIntent("Enter your passwrod", "");
 //                                        startActivityForResult(authIntent, INTENT_AUTHENTICATE);
 //                                    }
-                                    Intent intent = new Intent(Intent.ACTION_RUN);
-                                    intent.setComponent(new ComponentName("com.android.settings",
-                                            "com.android.settings.ConfirmLockPassword"));
-                                    startActivityForResult(intent, INTENT_AUTHENTICATE);
-                                }
-                            });
+                                        Intent intent = new Intent(Intent.ACTION_RUN);
+                                        intent.setComponent(new ComponentName("com.android.settings",
+                                                "com.android.settings.ConfirmLockPassword"));
+                                        startActivityForResult(intent, INTENT_AUTHENTICATE);
+                                    }
+                                });
 
-                            password.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(Intent.ACTION_RUN);
-                                    intent.setComponent(new ComponentName("com.android.settings",
-                                            "com.android.settings.ConfirmLockPassword"));
-                                    startActivityForResult(intent, INTENT_AUTHENTICATE);
-                                }
-                            });
+                                password.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(Intent.ACTION_RUN);
+                                        intent.setComponent(new ComponentName("com.android.settings",
+                                                "com.android.settings.ConfirmLockPassword"));
+                                        startActivityForResult(intent, INTENT_AUTHENTICATE);
+                                    }
+                                });
 
-                            // Check whether the device has a Fingerprint sensor.
-                            if (fingerprintManager != null) {
-                                if (!fingerprintManager.isHardwareDetected()) {
+                                // Check whether the device has a Fingerprint sensor.
+                                if (fingerprintManager != null) {
+                                    if (!fingerprintManager.isHardwareDetected()) {
 
-                                    textView.setText("Your Device does not have a Fingerprint Sensor");
-                                } else {
-                                    // Checks whether fingerprint permission is set on manifest
-                                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
-                                        textView.setText("Fingerprint authentication permission not enabled");
+                                        textView.setText("Your Device does not have a Fingerprint Sensor");
                                     } else {
-                                        // Check whether at least one fingerprint is registered
-                                        if (!fingerprintManager.hasEnrolledFingerprints()) {
-                                            Intent intent = new Intent(Intent.ACTION_RUN);
-                                            intent.setComponent(new ComponentName("com.android.settings",
-                                                    "com.android.settings.ConfirmLockPassword"));
-                                            startActivityForResult(intent, INTENT_AUTHENTICATE);
-
+                                        // Checks whether fingerprint permission is set on manifest
+                                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
+                                            textView.setText("Fingerprint authentication permission not enabled");
                                         } else {
-                                            // Checks whether lock screen security is enabled or not
-                                            if (keyguardManager != null) {
+                                            // Check whether at least one fingerprint is registered
+                                            if (!fingerprintManager.hasEnrolledFingerprints()) {
+                                                Intent intent = new Intent(Intent.ACTION_RUN);
+                                                intent.setComponent(new ComponentName("com.android.settings",
+                                                        "com.android.settings.ConfirmLockPassword"));
+                                                startActivityForResult(intent, INTENT_AUTHENTICATE);
+
+                                            } else {
+                                                // Checks whether lock screen security is enabled or not
                                                 if (!keyguardManager.isKeyguardSecure()) {
                                                     textView.setText("Lock screen security not enabled in Settings");
                                                 } else {
@@ -188,16 +210,24 @@ public class BiometricAuthActivity extends FragmentActivity {
                                             }
                                         }
                                     }
+                                    ImageView btnX;
+                                    btnX = mDialog.findViewById(R.id.cancel);
+                                    btnX.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            root.removeView(mDialog);
+                                            finish();
+                                        }
+                                    });
+                                } else {
+                                    Intent intent = new Intent(Intent.ACTION_RUN);
+                                    intent.setComponent(new ComponentName("com.android.settings",
+                                            "com.android.settings.ConfirmLockPassword"));
+                                    startActivityForResult(intent, INTENT_AUTHENTICATE);
                                 }
-                                ImageView btnX;
-                                btnX = mDialog.findViewById(R.id.cancel);
-                                btnX.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        root.removeView(mDialog);
-                                        finish();
-                                    }
-                                });
+                                //  wm.addView(ll, params1);
+
+
                             } else {
                                 Intent intent = new Intent(Intent.ACTION_RUN);
                                 intent.setComponent(new ComponentName("com.android.settings",
@@ -206,16 +236,7 @@ public class BiometricAuthActivity extends FragmentActivity {
                             }
                             //  wm.addView(ll, params1);
 
-
-                        } else {
-                            Intent intent = new Intent(Intent.ACTION_RUN);
-                            intent.setComponent(new ComponentName("com.android.settings",
-                                    "com.android.settings.ConfirmLockPassword"));
-                            startActivityForResult(intent, INTENT_AUTHENTICATE);
                         }
-                        //  wm.addView(ll, params1);
-
-
                     }
                 });
             }
@@ -358,7 +379,22 @@ public class BiometricAuthActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 Intent intent = new Intent(getApplicationContext(), FloatingWindow.class);
                 startService(intent);
-                finish();
+                try {
+                    Intent sendMessage = new Intent();
+                    sendMessage.setAction(FloatingWindow.BUTTON_ENABLED);
+                    sendBroadcast(sendMessage);
+                    SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.shared_preferences_for_message_name), Context.MODE_PRIVATE).edit();
+                    editor.putString("message", "Universe Rescued");
+                    editor.putBoolean(getString(R.string.is_notification_active), false);
+                    editor.apply();
+                    FingerprintHandler.clearNotification(getApplicationContext());
+                }
+                catch (Exception ignored) {
+
+                }
+                finally {
+                    finish();
+                }
             }
 //            else {
 //

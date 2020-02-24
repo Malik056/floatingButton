@@ -75,7 +75,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
             editor.putString("message", "Universe Rescued");
             editor.putBoolean(context.getString(R.string.is_notification_active), false);
             editor.apply();
-            clearNotification();
+            clearNotification(context);
             context.finish();
         }
         catch (Exception ignored) {
@@ -83,7 +83,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
         }
     }
 
-    public void clearNotification() {
+    static public void clearNotification(Context context) {
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {

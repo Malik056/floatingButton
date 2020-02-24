@@ -3,9 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jsb.project">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 
     <application
@@ -18,7 +21,9 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity android:name=".MessageActivity" />
-        <activity android:name=".BiometricAuthActivity" android:excludeFromRecents="true"/>
+        <activity
+            android:name=".BiometricAuthActivity"
+            android:excludeFromRecents="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service android:name=".FloatingWindow" />
+        <service android:name=".FloatingWindow" android:exported="true"/>
     </application>
 
 </manifest>
