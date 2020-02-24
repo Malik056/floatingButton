@@ -253,21 +253,21 @@ public class FloatingWindow extends Service {
         ll.addView(floatingButton);
         wm.addView(ll, params);
 //        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), idForForegoundSerivceNotificationChannel)
-                .setSmallIcon(R.drawable.logo)
-                .setContentTitle("Notification!")
-                .setContentText("Floating button is active!")
-                .setAutoCancel(false)
-                .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                .setSound(null)
-                .setOngoing(true);
-        try {
-
-            startForeground(2000, builder.build());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), idForForegoundSerivceNotificationChannel)
+//                .setSmallIcon(R.drawable.logo)
+//                .setContentTitle("Notification!")
+//                .setContentText("Floating button is active!")
+//                .setAutoCancel(false)
+//                .setPriority(NotificationCompat.PRIORITY_MIN)
+//                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+//                .setOngoing(true);
+//        try {
+//
+//            startForeground(2000, builder.build());
+//        } catch (Exception ex) {
+//
+//            ex.printStackTrace();
+//        }
 //        }
     }
 
@@ -307,9 +307,6 @@ public class FloatingWindow extends Service {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
-    public static float getScreenHeight() {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
-    }
 
 
 }

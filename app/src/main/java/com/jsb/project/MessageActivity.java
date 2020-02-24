@@ -145,9 +145,9 @@ public class MessageActivity extends AppCompatActivity {
         if (checkPermission()) {
             if (!isMyServiceRunning(FloatingWindow.class, getApplicationContext())) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(new Intent(MessageActivity.this, FloatingWindow.class));
-                }
-                else {
+                  //  startForegroundService(new Intent(MessageActivity.this, FloatingWindow.class));
+//                }
+//                else {
                     startService(new Intent(MessageActivity.this, FloatingWindow.class));
                 }
             }
