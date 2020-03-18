@@ -94,35 +94,6 @@ public class MessageActivity extends AppCompatActivity {
             editor.apply();
         }
 
-//        final Thread thread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        });
-
-//        HandlerThread mHandlerThread = new HandlerThread("HandlerThread");
-//        mHandlerThread.start();
-////        final int[] i = {0};
-////        final Handler handler = new Handler();
-////        handler.postDelayed(new Runnable() {
-////            @Override
-////            public void run() {
-////                i[0]++;
-////
-////                if(i[0] < 32) {
-////                    handler.postDelayed(this, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS / 320);
-////                }
-////            }
-////        }, 0);
-//
-//        WorkManager workManager = WorkManager.getInstance(getApplicationContext());
-//        workManager.cancelAllWork();
-//        PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(RerunService.class, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.SECONDS).build();
-//        workManager.enqueue(request);
-
-
-
     }
 
     private boolean isNotificationVisible() {
@@ -149,8 +120,8 @@ public class MessageActivity extends AppCompatActivity {
 //                }
 //                else {
                     startService(new Intent(MessageActivity.this, FloatingWindow.class));
-                }
-//            }
+//                }
+            }
         } else {
             reqPermission();
         }
@@ -170,8 +141,9 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private boolean checkPermission() {
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            return Settings.canDrawOverlays(this);
+            return Settings.canDrawOverlays(getApplicationContext());
         } else {
             return true;
         }
@@ -196,6 +168,8 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                Intent restart = new Intent(getApplicationContext(),   MainActivity.class);
+                startActivity(restart);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                     Intent intent;
                     intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -214,7 +188,7 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
-        alertBuilder.show();
+        alertBuilder.create().show();
 //        alert = alertBuilder.create();
 //        alert.show();
 

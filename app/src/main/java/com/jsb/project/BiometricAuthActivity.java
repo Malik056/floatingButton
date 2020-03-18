@@ -162,20 +162,36 @@ public class BiometricAuthActivity extends FragmentActivity {
 //                                        Intent authIntent = km.createConfirmDeviceCredentialIntent("Enter your passwrod", "");
 //                                        startActivityForResult(authIntent, INTENT_AUTHENTICATE);
 //                                    }
-                                        Intent intent = new Intent(Intent.ACTION_RUN);
-                                        intent.setComponent(new ComponentName("com.android.settings",
-                                                "com.android.settings.ConfirmLockPassword"));
-                                        startActivityForResult(intent, INTENT_AUTHENTICATE);
+//                                        Intent intent = new Intent(Intent.ACTION_RUN);
+//                                        intent.setComponent(new ComponentName("com.android.settings",
+//                                                "com.android.settings.ConfirmLockPassword"));
+//                                        startActivityForResult(intent, INTENT_AUTHENTICATE);
+                                        KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+
+                                        if (km.isKeyguardSecure()) {
+                                            Intent authIntent = km.createConfirmDeviceCredentialIntent(getString(R.string.dialog_title_auth), getString(R.string.dialog_msg_auth));
+                                            startActivityForResult(authIntent, INTENT_AUTHENTICATE);
+                                        }
+
                                     }
                                 });
 
                                 password.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        Intent intent = new Intent(Intent.ACTION_RUN);
-                                        intent.setComponent(new ComponentName("com.android.settings",
-                                                "com.android.settings.ConfirmLockPassword"));
-                                        startActivityForResult(intent, INTENT_AUTHENTICATE);
+
+                                        KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+
+                                        if (km.isKeyguardSecure()) {
+                                            Intent authIntent = km.createConfirmDeviceCredentialIntent(getString(R.string.dialog_title_auth), getString(R.string.dialog_msg_auth));
+                                            startActivityForResult(authIntent, INTENT_AUTHENTICATE);
+                                        }
+
+
+                                        //                                        Intent intent = new Intent(Intent.ACTION_RUN);
+//                                        intent.setComponent(new ComponentName("com.android.settings",
+//                                                "com.android.settings.ConfirmLockPassword"));
+//                                        startActivityForResult(intent, INTENT_AUTHENTICATE);
                                     }
                                 });
 

@@ -3,4 +3,6 @@
     <string name="shared_preferences_for_message_name">message</string>
     <string name="is_notification_active">is_notification_active</string>
     <string name="authentication_request_message">Enter your device\nPassword or Pin\nor Fingerprint</string>
+    <string name="dialog_title_auth">Authentication</string>
+    <string name="dialog_msg_auth">Please Confirm your identity</string>
 </resources>
